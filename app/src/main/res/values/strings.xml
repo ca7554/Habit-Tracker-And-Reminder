@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Habit Tracker And Reminder</string>
+    <string name="enter_habit_title">Enter Habit Title</string>
+
+    <string-array name="Frequency">
+        <item>Daily</item>
+        <item>Weekly</item>
+    </string-array>
+    <string name="title_activity_habit_viewer">HabitViewerActivity</string>
+</resources>

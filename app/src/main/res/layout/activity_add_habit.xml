@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".controller.AddHabitActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="24dp"
+    android:paddingHorizontal="12dp"
+    android:background="?attr/colorPrimary">
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Back" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/backButton">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/enterTitleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/add_habit_top_margin"
+                android:hint="@string/enter_habit_title"
+                android:maxLines="1"
+                android:inputType="text"
+                android:isScrollContainer="false"
+                android:textColorHint="?attr/colorOnPrimary"
+                android:textSize="24sp" />
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/enterDescriptionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterTitleEditText"
+                android:layout_marginTop="@dimen/add_habit_top_margin"
+                android:textSize="24sp"
+                android:hint="Enter Description"
+                android:textColorHint="?attr/colorOnPrimary"
+                android:maxLines="3" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/notifyFrequencyTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enterDescriptionEditText"
+                android:layout_marginTop="@dimen/add_habit_top_margin"
+                android:text="Notify Frequency"
+                android:textSize="24sp"
+                android:textColor="?attr/colorOnPrimary"/>
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/frequencySpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_below="@id/notifyFrequencyTextView"
+                android:layout_marginVertical="16dp"
+                android:importantForAccessibility="no"/>
+        </RelativeLayout>
+    </ScrollView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/checkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/baseline_check_24"
+        android:contentDescription="Done"/>
+</RelativeLayout>
