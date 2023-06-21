@@ -1,18 +1,17 @@
 package com.example.habittrackerandreminder.controller
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.habittrackerandreminder.R
 import com.example.habittrackerandreminder.databinding.ActivityAddHabitBinding
 import com.example.habittrackerandreminder.model.database.entity.Habit
 import com.example.habittrackerandreminder.model.handler.AppManager
-import com.example.habittrackerandreminder.model.handler.NotificationHandler
 
 /**
- * AddHabitActivity allows user to add new habit to local database and starts repeating notification
+ * AddHabitActivity allows user to add new habit to local database and starts repeating notifications
  */
 class AddHabitActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddHabitBinding
@@ -73,7 +72,7 @@ class AddHabitActivity : AppCompatActivity() {
             val habitId = AppManager.dataHandler.addHabit(habit)
             habit.id = habitId //Set id to habit
 
-            NotificationHandler.startHabitNotification(habit) //Starts new repeating notification
+            AppManager.notificationHandler.startHabitNotification(habit, this) //Starts new notification
 
             Toast.makeText(this, "Habit saved!", Toast.LENGTH_SHORT).show()
         } ?: Toast.makeText(this, "Error adding habit", Toast.LENGTH_SHORT).show()

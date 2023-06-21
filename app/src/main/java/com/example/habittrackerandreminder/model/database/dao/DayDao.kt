@@ -14,7 +14,7 @@ interface DayDao {
     @Insert
     fun insertAll(vararg days: Day): List<Long>
     @Query("SELECT * FROM days WHERE week_id IN (:weekIds)")
-    fun loadDaysByWeekIds(weekIds: Array<Long>): List<Day>
+    fun loadDaysByWeekIds(weekIds: List<Long>): List<Day>
     @Delete
     fun deleteDays(vararg days: Day)
 }

@@ -29,6 +29,22 @@ class MilitaryTime(@PrimaryKey(autoGenerate = true) val id: Long? = null,
     }
 
     /**
+     * Compares weather a military time is greater, less then, or equal to another military time
+     * @param militaryTime Military time to compare
+     */
+    fun compareTo(militaryTime: MilitaryTime): Int {
+        if(this.hour > militaryTime.hour)
+            return 1
+        if(this.hour < militaryTime.hour)
+            return -1
+        if(this.minute > militaryTime.minute)
+            return 1
+        if(this.minute < militaryTime.minute)
+            return -1
+        return 0
+    }
+
+    /**
      * Determines if MilitaryTime is equal to another MilitaryTime based on hour and minute
      * @return Boolean represents equality
      */

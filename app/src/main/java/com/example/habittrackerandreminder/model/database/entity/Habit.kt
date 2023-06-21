@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import java.util.*
 
 /**
  * Habit used for entity in Day table in local database
@@ -13,7 +14,9 @@ import androidx.room.PrimaryKey
  * @param description Description of Habit
  */
 @Entity(tableName = "habits")
-class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo var weekId: Long? = null,
+class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo(name = "week_id") var weekId: Long? = null,
+            @ColumnInfo(name = "day_index") var dayIndex: Int = 0,
+            @ColumnInfo(name = "time_index") var timeIndex: Int = -1,
             @ColumnInfo var title: String, @ColumnInfo var description: String) {
     @Ignore
     var week = Week() //Week is used for holding the times a Habit should be done/notified
@@ -26,6 +29,48 @@ class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo v
      */
     constructor(title: String, description: String, week: Week) : this(title = title, description= description){
         this.week = week
+        setFutureWeekIndexes()
+    }
+
+    /**
+     * Gets next military time based on current time index saved for habit
+     * @return Time a reminder should be triggered next
+     */
+    fun getNextTimeReminder(): MilitaryTime {
+        return week.days[dayIndex].timesInDay[timeIndex]
+    }
+
+    /**
+     * Sets future indexes for Habit's week based off of current system milliseconds to determine
+     * when the next time a habit should be notified
+     */
+    fun setFutureWeekIndexes() { //Todo: Update to use binary search for faster searching
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        val currentTime = MilitaryTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
+
+        var newDayIndex = dayOfWeek - 1
+        var newTimeIndex = -1
+        dayLoop@
+        do{ //Loops to find the next valid time a habit should be notified
+            for(time in week.days[newDayIndex].timesInDay){
+                if(time.hour > currentTime.hour || (time.hour == currentTime.hour && time.minute > currentTime.minute)){
+                    newTimeIndex += 1
+                    break@dayLoop
+                }
+                newTimeIndex += 1
+            }
+            newDayIndex = (newDayIndex + 1) % 7
+            newTimeIndex = -1
+        }while (newDayIndex != dayOfWeek - 1)
+
+        if(newDayIndex == dayOfWeek - 1 && newTimeIndex < 0)
+            return
+
+        dayIndex = newDayIndex
+        timeIndex = newTimeIndex
     }
 
     companion object{
@@ -42,7 +87,11 @@ class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo v
             }else if(frequency.equals("weekly", ignoreCase = true)){
                 val timesInDays = Array(Week.DAYS_IN_WEEK){ i -> if(i == 0) arrayOf(MilitaryTime(12, 0)) else arrayOf() }
                 Week(timesInDays)
-            } else
+            }else if(frequency.equals("minute", ignoreCase = true)){
+                Week(Array(7) {
+                    Array(1440){ i -> MilitaryTime(i / 60, i % 60) }
+                })
+            }else
                 null
         }
 
@@ -61,9 +110,9 @@ class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo v
             while(i < week.days.size){ //Loop completes if either Weekly, Daily or None
                 val day = week.days[i]
                 if(day.timesInDay.isNotEmpty()){
-                    if(militaryTime == day.timesInDay[0] && timesFound == i)
+                    if(day.timesInDay.size == 1 && militaryTime == day.timesInDay[0] && timesFound == i)
                         timesFound++
-                    else if(militaryTime == null) {
+                    else if(day.timesInDay.size == 1 && militaryTime == null) {
                         militaryTime = day.timesInDay[0]
                         timesFound++
                     }else

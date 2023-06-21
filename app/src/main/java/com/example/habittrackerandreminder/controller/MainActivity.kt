@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        AppManager.dataHandler.loadAllHabitsShallow().observe(this) {
+        AppManager.dataHandler.loadAllHabitsShallowInLiveData().observe(this) {
             adapter.setData(it)
         } //Allows recycler view to automatically update when changes are detected in local database
 
