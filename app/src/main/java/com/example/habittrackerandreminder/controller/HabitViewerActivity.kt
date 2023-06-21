@@ -21,7 +21,6 @@ import com.example.habittrackerandreminder.controller.ui.theme.HabitTrackerAndRe
 import com.example.habittrackerandreminder.model.database.entity.Habit
 import com.example.habittrackerandreminder.model.database.entity.Week
 import com.example.habittrackerandreminder.model.handler.AppManager
-import com.example.habittrackerandreminder.model.handler.NotificationHandler
 
 /**
  * HabitViewerActivity views Habit that was saved and allows user to make changes
@@ -31,7 +30,7 @@ class HabitViewerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val habitId = intent.getLongExtra("habitId", -1) //Gets habit id
-        val habit = AppManager.dataHandler.loadHabitFullById(habitId) //Loads full initialized habit from database
+        val habit = AppManager.dataHandler.loadHabitsFullByIds(listOf(habitId))[0] //Loads full initialized habit from database
 
         setContent {
             HabitTrackerAndReminderTheme {
@@ -95,7 +94,7 @@ fun Root(habit: Habit, activity: HabitViewerActivity = HabitViewerActivity()) {
             //Deletes Habit from database
             Button(onClick =
             {
-                NotificationHandler.cancelHabitNotification(habit) //Cancel habit notification
+                AppManager.notificationHandler.cancelHabitNotification(habit.id!!.toInt(), activity) //Cancel habit notification
                 AppManager.dataHandler.deleteHabitFromDatabase(habit) //Deletes habit and all its relations from database
                 activity.finish()
             },

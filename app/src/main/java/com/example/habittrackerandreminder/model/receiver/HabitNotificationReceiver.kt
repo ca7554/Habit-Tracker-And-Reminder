@@ -11,28 +11,31 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.habittrackerandreminder.R
 import com.example.habittrackerandreminder.controller.MainActivity
-import com.example.habittrackerandreminder.model.handler.AppManager
+import com.example.habittrackerandreminder.model.handler.DataHandler
+import com.example.habittrackerandreminder.model.handler.NotificationHandler
 
 /**
  * HabitNotificationReceiver listens to system-wide broadcast intents
  */
 class HabitNotificationReceiver: BroadcastReceiver() {
     /**
-     * Triggered by each notification interval and creates and shows notification
+     * Triggered by each notification interval and creates and shows notification then sets next
+     * notification based off next start time.
      */
     override fun onReceive(context: Context?, intent: Intent?) {
-        //Sets values from Habit values passed to Intent
-        val title = intent?.getStringExtra("title") ?: "Empty"
-        val description = intent?.getStringExtra("description") ?: "Empty"
+        val dataHandler = DataHandler(context!!)
+
+        val notificationId = intent?.getIntExtra("notificationId", 0) ?: 0
+        val habit = dataHandler.loadHabitsFullByIds(listOf(notificationId.toLong()))[0]
+        val title = habit.title
+        val description = habit.description
 
         //Creates notification and sets values
-        val builder = NotificationCompat.Builder(context!!, AppManager.CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, NotificationHandler.CHANNEL_ID)
             .setSmallIcon(R.drawable.baseline_alarm_24)
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        val notificationId = intent?.getIntExtra("notificationId", 0) ?: 0
 
         //Todo: Check Intent behavior when app is already open
         val notifyIntent = Intent(context, MainActivity::class.java) //Intent when notification pressed
@@ -51,5 +54,11 @@ class HabitNotificationReceiver: BroadcastReceiver() {
         }
 
         managerCompat.notify(notificationId, notificationCompat) //Shows notification
+
+        habit.setFutureWeekIndexes() //Sets next indexes for next interval to be triggered
+        dataHandler.addHabitsShallow(arrayOf(habit)) //Saves habit to database
+
+        val notificationHandler = NotificationHandler(context)
+        notificationHandler.startHabitNotification(habit, context) //Set next notification based off of Habit's indexes
     }
 }

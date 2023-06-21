@@ -13,7 +13,7 @@ interface MilitaryTimeDao {
     @Insert
     fun insertAll(vararg militaryTimes: MilitaryTime): List<Long>
     @Query("SELECT * FROM military_times WHERE day_id IN (:dayIds)")
-    fun loadMilitaryTimesByDayIds(dayIds: List<Long>): List<MilitaryTime>
+    fun loadMilitaryTimesByDaysIds(dayIds: List<Long>): List<MilitaryTime>
     @Delete
     fun deleteMilitaryTimes(vararg times: MilitaryTime)
 }

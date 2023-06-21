@@ -5,6 +5,7 @@
     <string-array name="Frequency">
         <item>Daily</item>
         <item>Weekly</item>
+        <item>Minute</item>
     </string-array>
     <string name="title_activity_habit_viewer">HabitViewerActivity</string>
 </resources>
