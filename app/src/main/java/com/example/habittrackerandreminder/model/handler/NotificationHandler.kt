@@ -52,16 +52,16 @@ class NotificationHandler(context: Context) {
 
         val currentTime = MilitaryTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
 
+        //Prevents habit from starting immediately and adds week interval if needed
+        if(calendar.get(Calendar.DAY_OF_WEEK) > day + 1 ||
+            (calendar.get(Calendar.DAY_OF_WEEK) == day + 1 && currentTime.compareTo(nextTimeReminder) >= 0))
+            calendar.timeInMillis += 604800000L //Week in milliseconds
+
+        //Set calendar based on habits next time to notify
+        calendar.set(Calendar.DAY_OF_WEEK, day + 1)
         calendar.set(Calendar.HOUR_OF_DAY, nextTimeReminder.hour)
         calendar.set(Calendar.MINUTE, nextTimeReminder.minute)
         calendar.set(Calendar.SECOND, 0)
-
-        //Prevents habit from starting immediately and adds week interval if needed
-        if(calendar.get(Calendar.DAY_OF_WEEK) > day + 1 ||
-            (calendar.get(Calendar.DAY_OF_WEEK) == day + 1 && currentTime.compareTo(nextTimeReminder) >= 0)) {
-            calendar.set(Calendar.DAY_OF_WEEK, day + 1)
-            calendar.timeInMillis += 604800000L //Week in milliseconds
-        }
 
         habitNotification.set(calendar.timeInMillis)
     }
