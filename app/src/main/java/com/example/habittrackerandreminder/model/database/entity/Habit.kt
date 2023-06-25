@@ -44,33 +44,48 @@ class Habit(@PrimaryKey(autoGenerate = true) var id: Long? = null, @ColumnInfo(n
      * Sets future indexes for Habit's week based off of current system milliseconds to determine
      * when the next time a habit should be notified
      */
-    fun setFutureWeekIndexes() { //Todo: Update to use binary search for faster searching
+    fun setFutureWeekIndexes() {
         val calendar: Calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
 
-        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        dayIndex = calendar.get(Calendar.DAY_OF_WEEK) - 1
+
         val currentTime = MilitaryTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
-
-        var newDayIndex = dayOfWeek - 1
+        val timesInDay = week.days[dayIndex].timesInDay
         var newTimeIndex = -1
-        dayLoop@
-        do{ //Loops to find the next valid time a habit should be notified
-            for(time in week.days[newDayIndex].timesInDay){
-                if(time.hour > currentTime.hour || (time.hour == currentTime.hour && time.minute > currentTime.minute)){
-                    newTimeIndex += 1
-                    break@dayLoop
-                }
-                newTimeIndex += 1
-            }
-            newDayIndex = (newDayIndex + 1) % 7
-            newTimeIndex = -1
-        }while (newDayIndex != dayOfWeek - 1)
+        var right = timesInDay.size - 1
+        var left = 0
 
-        if(newDayIndex == dayOfWeek - 1 && newTimeIndex < 0)
+        while (left <= right) { //Searches using binary search for current military time in timesInDay
+            newTimeIndex = left + (right - left) / 2 //newTimeIndex = mid
+
+            if (timesInDay[newTimeIndex] == currentTime)
+                break
+            else if (timesInDay[newTimeIndex].compareTo(currentTime) < 0)
+                left = newTimeIndex + 1
+            else
+                right = newTimeIndex - 1
+        }
+
+        //Checks if last known index is bigger than current time
+        if (newTimeIndex != -1 && timesInDay[newTimeIndex].compareTo(currentTime) > 0) {
+            timeIndex = newTimeIndex
             return
+        }
+        //Gets next bigger time if possible
+        else if (newTimeIndex != -1 && newTimeIndex + 1 < timesInDay.size) {
+            timeIndex = newTimeIndex + 1
+            return
+        }
 
-        dayIndex = newDayIndex
-        timeIndex = newTimeIndex
+        //Loops through all days looking for a non-empty day
+        for(i in 0 until Week.DAYS_IN_WEEK) {
+            dayIndex = (dayIndex + 1) % 7
+            if(week.days[dayIndex].timesInDay.isNotEmpty())
+                break
+        }
+
+        timeIndex = 0 //Time index must be zero
     }
 
     companion object{
