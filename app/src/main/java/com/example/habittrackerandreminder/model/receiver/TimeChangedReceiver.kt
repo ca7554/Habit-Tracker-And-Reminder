@@ -11,7 +11,8 @@ import com.example.habittrackerandreminder.model.handler.NotificationHandler
  */
 class TimeChangedReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent) {
-        if ("android.intent.action.TIME_SET" == intent.action) {
+        if ("android.intent.action.TIME_SET" == intent.action ||
+            "android.intent.action.TIMEZONE_CHANGED" == intent.action) {
             val dataHandler = DataHandler(context!!)
             val notificationHandler = NotificationHandler(context)
 
