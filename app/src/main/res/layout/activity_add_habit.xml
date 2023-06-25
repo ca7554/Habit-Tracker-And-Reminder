@@ -7,7 +7,9 @@
     android:orientation="vertical"
     android:paddingTop="24dp"
     android:paddingHorizontal="12dp"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+    android:clipChildren="false"
+    android:clipToPadding="false">
     <ImageButton
         android:id="@+id/backButton"
         android:layout_width="48dp"
@@ -70,6 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp"
         android:src="@drawable/baseline_check_24"
         android:contentDescription="Done"/>
 </RelativeLayout>
